@@ -287,6 +287,7 @@ Syslink::task_main()
 
 	//	int ret;
 
+	return;
 	/* Open serial port */
 	const char *dev = "/dev/ttyS2";
 	_fd = open_serial(dev);

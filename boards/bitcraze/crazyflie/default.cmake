@@ -16,6 +16,7 @@ px4_add_board(
 		magnetometer/akm/ak8963
 		optical_flow/pmw3901
 		pwm_out
+		rc_input
 	MODULES
 		attitude_estimator_q
 		#camera_feedback
@@ -32,6 +33,7 @@ px4_add_board(
 		logger
 		mavlink
 		mc_att_control
+		# mc_autotune_attitude_control
 		mc_hover_thrust_estimator
 		mc_pos_control
 		mc_rate_control
@@ -59,6 +61,7 @@ px4_add_board(
 		reboot
 		reflect
 		sd_bench
+		#sd_stress
 		system_time
 		top
 		topic_listener

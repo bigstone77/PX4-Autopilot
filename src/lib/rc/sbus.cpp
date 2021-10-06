@@ -194,8 +194,8 @@ sbus_config(int sbus_fd, bool singlewire)
 
 		/* 100000bps, even parity, two stop bits */
 		tcgetattr(sbus_fd, &t);
-		cfsetspeed(&t, 100000);
-		t.c_cflag |= (CSTOPB | PARENB);
+		cfsetspeed(&t, 57600);
+		t.c_cflag &= ~(CSTOPB | PARENB);
 		tcsetattr(sbus_fd, TCSANOW, &t);
 
 		if (singlewire) {

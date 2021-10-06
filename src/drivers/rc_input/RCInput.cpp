@@ -38,6 +38,8 @@
 
 #include <termios.h>
 
+#define RC_SERIAL_PORT "/dev/ttyS2"
+
 using namespace time_literals;
 
 constexpr char const *RCInput::RC_SCAN_STRING[];
@@ -244,6 +246,7 @@ RCInput::fill_rc_in(uint16_t raw_rc_count_local,
 
 void RCInput::set_rc_scan_state(RC_SCAN newState)
 {
+	newState = RC_SCAN_SBUS;
 	PX4_DEBUG("RCscan: %s failed, trying %s", RCInput::RC_SCAN_STRING[_rc_scan_state], RCInput::RC_SCAN_STRING[newState]);
 	_rc_scan_begin = 0;
 	_rc_scan_state = newState;
@@ -405,10 +408,31 @@ void RCInput::Run()
 		// read all available data from the serial RC input UART
 
 		// read all available data from the serial RC input UART
-		int newBytes = ::read(_rcs_fd, &_rcs_buf[0], RC_MAX_BUFFER_SIZE);
+		uint8_t readData[RC_MAX_BUFFER_SIZE];
+		int newBytes = ::read(_rcs_fd, readData, RC_MAX_BUFFER_SIZE);
+
 
 		if (newBytes > 0) {
-			_bytes_rx += newBytes;
+			static uint64_t oldTime;
+			uint64_t curr = hrt_absolute_time();
+
+			if((curr-oldTime)>10000)
+				_bytes_rx = 0;
+			oldTime = curr;
+
+			if((newBytes + _bytes_rx) < RC_MAX_BUFFER_SIZE){
+				memcpy(&_rcs_buf[_bytes_rx], readData, newBytes);
+				_bytes_rx += newBytes;
+			}
+			if(_bytes_rx<25)
+				return;
+			newBytes = _bytes_rx;
+
+			//printf("newByte:%d time:%lld\r\n", newBytes, hrt_absolute_time());
+			for(int n=0;n<newBytes; n++)
+				printf("%x ", _rcs_buf[n]);
+			printf("\r\n");
+
 		}
 
 		switch (_rc_scan_state) {
