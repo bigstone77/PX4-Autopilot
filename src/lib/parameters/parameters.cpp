@@ -1185,6 +1185,7 @@ param_load_default()
 	return res;
 }
 
+static uint8_t bson_buffer[1280];
 int
 param_export(int fd, bool only_unsaved, param_filter_func filter)
 {
@@ -1214,7 +1215,6 @@ param_export(int fd, bool only_unsaved, param_filter_func filter)
 
 	param_lock_reader();
 
-	uint8_t bson_buffer[256];
 	bson_encoder_init_buf_file(&encoder, fd, &bson_buffer, sizeof(bson_buffer));
 
 	/* no modified parameters -> we are done */
