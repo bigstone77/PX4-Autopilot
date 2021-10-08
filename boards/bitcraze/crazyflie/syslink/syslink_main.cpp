@@ -825,6 +825,7 @@ void test()
 
 } // namespace syslink
 
+void print_bson(void);
 int syslink_main(int argc, char *argv[])
 {
 	if (argc < 2) {
@@ -839,7 +840,8 @@ int syslink_main(int argc, char *argv[])
 	}
 
 	if (!strcmp(verb, "status")) {
-		syslink::status();
+		print_bson();
+		//syslink::status();
 	}
 
 	if (!strcmp(verb, "attached")) {

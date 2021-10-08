@@ -15,6 +15,7 @@ px4_add_board(
 		imu/invensense/mpu9250
 		magnetometer/akm/ak8963
 		optical_flow/pmw3901
+		barometer/bmp280
 		pwm_out
 		rc_input
 	MODULES

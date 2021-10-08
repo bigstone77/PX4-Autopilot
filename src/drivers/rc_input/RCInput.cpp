@@ -429,9 +429,9 @@ void RCInput::Run()
 			newBytes = _bytes_rx;
 
 			//printf("newByte:%d time:%lld\r\n", newBytes, hrt_absolute_time());
-			for(int n=0;n<newBytes; n++)
-				printf("%x ", _rcs_buf[n]);
-			printf("\r\n");
+//			for(int n=0;n<newBytes; n++)
+//				printf("%x ", _rcs_buf[n]);
+//			printf("\r\n");
 
 		}
 

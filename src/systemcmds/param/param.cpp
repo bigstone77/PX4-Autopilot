@@ -470,7 +470,7 @@ do_import(const char *param_file_name)
 	int fd = -1;
 
 	if (param_file_name) { // passing NULL means to select the flash storage
-		fd = open(param_file_name, O_RDONLY);
+		fd = 0;//open(param_file_name, O_RDONLY);
 
 		if (fd < 0) {
 			PX4_ERR("open '%s' failed (%i)", param_file_name, errno);
