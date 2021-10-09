@@ -506,6 +506,13 @@ MixingOutput::reorderOutputs(uint16_t values[MAX_ACTUATORS])
 		values[2] = value_tmp[1];
 		values[3] = value_tmp[2];
 	}
+	else{
+		const uint16_t value_tmp[4] = {values[0], values[1], values[2], values[3] };
+		values[0] = value_tmp[0];
+		values[1] = value_tmp[3];
+		values[2] = value_tmp[2];
+		values[3] = value_tmp[1];
+	}
 
 	/* else: PX4, no need to reorder
 	 * 3     1
