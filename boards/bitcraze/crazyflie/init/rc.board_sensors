@@ -13,4 +13,5 @@ if mpu9250_i2c -I -b 3 -a 0x69 -R 6 start; then
 fi
 
 # Optical flow deck
-# vl53l0x start -X
+ vl53l0x start -X
+ pmw3901 start -s
