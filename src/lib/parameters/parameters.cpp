@@ -1125,7 +1125,11 @@ int param_save_default()
 
 	while (res != OK && attempts > 0) {
 		// write parameters to file
+#ifdef PARAM_HARDCODING
 		int fd = 0;//::open(filename, O_WRONLY | O_CREAT, PX4_O_MODE_666);
+#else
+		int fd = ::open(filename, O_WRONLY | O_CREAT, PX4_O_MODE_666);
+#endif
 
 		if (fd > -1) {
 			res = param_export(fd, false, nullptr);

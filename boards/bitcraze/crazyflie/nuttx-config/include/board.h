@@ -83,6 +83,8 @@
  * LSE - not installed
  */
 
+//#define PARAM_HARDCODING		1
+
 #define STM32_BOARD_XTAL        8000000ul
 
 #define STM32_HSI_FREQUENCY     16000000ul
