@@ -840,8 +840,11 @@ int syslink_main(int argc, char *argv[])
 	}
 
 	if (!strcmp(verb, "status")) {
+#ifdef PARAM_HARDCODING
 		print_bson();
-		//syslink::status();
+#else
+		syslink::status();
+#endif
 	}
 
 	if (!strcmp(verb, "attached")) {
