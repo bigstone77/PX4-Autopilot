@@ -1,6 +1,6 @@
 ############################################################################
 #
-#   Copyright (c) 2018 PX4 Development Team. All rights reserved.
+#   Copyright (c) 2016 PX4 Development Team. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -31,5 +31,11 @@
 #
 ############################################################################
 
-add_subdirectory(syslink)
-add_subdirectory(jdmission)
+px4_add_module(
+	MODULE modules__jdmission
+	MAIN jdmission
+	COMPILE_FLAGS
+		-Wno-cast-align # TODO: fix and enable
+	SRCS
+		jdmission.cpp
+	)
