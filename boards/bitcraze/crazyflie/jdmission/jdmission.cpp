@@ -62,13 +62,15 @@
 #include "jdmission.h"
 
 
+extern "C" int getPrintBuf(char *buf);
+static char printBuf[100];
 JDMission::JDMission():
 	ModuleParams(nullptr),
 	ScheduledWorkItem(MODULE_NAME, px4::wq_configurations::hp_default)
 {
 	packet.goldenkey = 0x6114A826;
 	packet.length = 30;
-	packet.option = 2;
+	packet.option = 1;
 }
 
 
@@ -90,6 +92,23 @@ void JDMission::Checksum(packet_t *pkt)
 void JDMission::Run()		//2ms
 {
 	hrt_abstime now_us = hrt_absolute_time();
+
+	static int cnt;
+	if((++cnt%20)!=0)
+		return;
+
+	int _len = getPrintBuf(printBuf);
+	if(_len != 0){
+		packet.option = 2;
+		packet.length = _len+8;
+		memcpy(packet.data8, printBuf, _len);
+		packet.data8[_len] = 0;
+		Checksum(&packet);
+		write(_fd, (const void *)&packet, packet.length);
+		last_time = now_us;
+		return;
+
+	}
 
 	if(_sensor_gyro_sub.updated()){
 		sensor_gyro_s gyro;
@@ -122,6 +141,7 @@ void JDMission::Run()		//2ms
 		}
 	}
 	if((now_us-last_time)>20000){
+		packet.option = 1;
 		Checksum(&packet);
 		write(_fd, (const void *)&packet, packet.length);
 

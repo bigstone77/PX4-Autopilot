@@ -50,6 +50,7 @@
 #include <uORB/topics/log_message.h>
 #include <drivers/drv_hrt.h>
 
+extern "C" void putPrintBuf(char *buf);
 static orb_advert_t orb_log_message_pub = nullptr;
 
 __EXPORT const char *__px4_log_level_str[_PX4_LOG_LEVEL_PANIC + 1] = { "DEBUG", "INFO", "WARN", "ERROR", "PANIC" };
@@ -153,6 +154,7 @@ __EXPORT void px4_log_modulename(int level, const char *module_name, const char 
 		// ensure NULL termination (buffer is max_length + 1)
 		buf[max_length] = 0;
 
+		putPrintBuf(buf);
 		fputs(buf, out);
 
 #if defined(CONFIG_ARCH_BOARD_PX4_SITL)
@@ -163,7 +165,7 @@ __EXPORT void px4_log_modulename(int level, const char *module_name, const char 
 	}
 
 	/* publish an orb log message */
-	if (level >= _PX4_LOG_LEVEL_INFO && orb_log_message_pub) { //publish all messages
+	if (level >= _PX4_LOG_LEVEL_INFO && orb_log_message_pub){ //publish all messages
 
 		log_message_s log_message;
 
@@ -235,6 +237,7 @@ __EXPORT void px4_log_raw(int level, const char *fmt, ...)
 		// ensure NULL termination (buffer is max_length + 1)
 		buf[max_length] = 0;
 
+		putPrintBuf(buf);
 		fputs(buf, out);
 	}
 }

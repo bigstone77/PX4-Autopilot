@@ -24,6 +24,7 @@
 #include <uORB/topics/sensor_accel.h>
 #include <uORB/topics/distance_sensor.h>
 #include <uORB/topics/optical_flow.h>
+#include <uORB/topics/log_message.h>
 
 typedef struct __attribute__((__packed__)){
 	uint32_t goldenkey;
@@ -31,9 +32,9 @@ typedef struct __attribute__((__packed__)){
 	uint8_t checksum;
 	uint16_t option;
 	union{
-		int8_t data8[40];
-		int16_t data16[20];
-		int32_t data32[10];
+		int8_t data8[80];
+		int16_t data16[40];
+		int32_t data32[20];
 	};
 }packet_t;
 
@@ -55,6 +56,7 @@ private:
 	uORB::Subscription _sensor_accel_sub{ORB_ID(sensor_accel)};
 	uORB::Subscription _distance_sensor_sub{ORB_ID(distance_sensor)};
 	uORB::Subscription _optical_flow_sub{ORB_ID(optical_flow)};
+	uORB::Subscription _log_message_sub{ORB_ID(log_message)};
 	void Checksum(packet_t *pkt);
 	void task_main();
 	void Run() override;
