@@ -237,9 +237,9 @@ MultirotorMixer::mix_airmode_rpy(float roll, float pitch, float yaw, float thrus
 	// Do full mixing
 	for (unsigned i = 0; i < _rotor_count; i++) {
 		outputs[i] = roll * _rotors[i].roll_scale +
-			     pitch * _rotors[i].pitch_scale +
-			     yaw * _rotors[i].yaw_scale +
-			     thrust * _rotors[i].thrust_scale;
+				pitch * _rotors[i].pitch_scale +
+				yaw * _rotors[i].yaw_scale +
+				thrust * _rotors[i].thrust_scale;
 
 		// Thrust will be used to unsaturate if needed
 		_tmp_array[i] = _rotors[i].thrust_scale;
@@ -313,6 +313,7 @@ void MultirotorMixer::mix_yaw(float yaw, float *outputs)
 	minimize_saturation(_tmp_array, outputs, _saturation_status, 0.f, 1.f, true);
 }
 
+float motor_output[4];
 unsigned
 MultirotorMixer::mix(float *outputs, unsigned space)
 {
@@ -357,6 +358,7 @@ MultirotorMixer::mix(float *outputs, unsigned space)
 		}
 
 		outputs[i] = math::constrain((2.f * outputs[i] - 1.f), -1.f, 1.f);
+		motor_output[i] = outputs[i];
 	}
 
 	// Slew rate limiting and saturation checking

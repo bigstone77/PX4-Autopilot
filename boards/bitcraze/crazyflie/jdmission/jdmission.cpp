@@ -62,6 +62,7 @@
 #include "jdmission.h"
 
 
+extern float motor_output[4];
 extern "C" int getPrintBuf(char *buf);
 static char printBuf[100];
 JDMission::JDMission():
@@ -109,39 +110,53 @@ void JDMission::Run()		//2ms
 		return;
 
 	}
-
+	packet.option = 1;
+	packet.length = 28;
 	if(_sensor_gyro_sub.updated()){
 		sensor_gyro_s gyro;
 		if (_sensor_gyro_sub.update(&gyro)) {
-			packet.data16[0] = (int16_t)(gyro.x*20);
-			packet.data16[1] = (int16_t)(gyro.y*20);
-			packet.data16[2] = (int16_t)(gyro.z*20);
+			packet.data8[0] = (int8_t)(gyro.x*10);
+			packet.data8[1] = (int8_t)(gyro.y*10);
+			packet.data8[2] = (int8_t)(gyro.z*10);
+			packet.data8[3] = 0;
 		}
 	}
 	if(_sensor_accel_sub.updated()){
 		sensor_accel_s accel;
 		if (_sensor_accel_sub.update(&accel)) {
-			packet.data16[3] = (int16_t)(accel.x*10);
-			packet.data16[4] = (int16_t)(accel.y*10);
-			packet.data16[5] = (int16_t)(accel.z*10);
+			packet.data8[4] = (int8_t)(accel.x*5);
+			packet.data8[5] = (int8_t)(accel.y*5);
+			packet.data8[6] = (int8_t)(accel.z*5);
+			packet.data8[7] = 0;
 		}
 	}
 	if(_optical_flow_sub.updated()){
 		optical_flow_s optical_flow;
 		if(_optical_flow_sub.update(&optical_flow)){
-			packet.data16[6] = (int16_t)(optical_flow.pixel_flow_x_integral*200);
-			packet.data16[7] = (int16_t)(optical_flow.pixel_flow_y_integral*200);
+			packet.data8[12] = (int8_t)(optical_flow.pixel_flow_x_integral*50);
+			packet.data8[13] = (int8_t)(optical_flow.pixel_flow_y_integral*50);
 		}
 	}
 
 	if(_distance_sensor_sub.updated()){
 		distance_sensor_s distance_sensor;
 		if(_distance_sensor_sub.update(&distance_sensor)){
-			packet.data16[8] = (int16_t)(distance_sensor.current_distance*100);
+			packet.data8[14] = (int8_t)(distance_sensor.current_distance*20);
 		}
 	}
+
+	if (_magnetometer_sub.updated()) {
+		vehicle_magnetometer_s magnetometer;
+		_magnetometer_sub.update(&magnetometer);
+		packet.data8[16] = (int8_t)(magnetometer.magnetometer_ga[0]*100);
+		packet.data8[17] = (int8_t)(magnetometer.magnetometer_ga[1]*100);
+		packet.data8[18] = (int8_t)(magnetometer.magnetometer_ga[2]*100);
+		packet.data8[19] = 0;
+	}
+
 	if((now_us-last_time)>20000){
-		packet.option = 1;
+		for(int n=0;n <4 ;n++)
+			packet.data8[8+n] = (int8_t)(motor_output[n]*100);
 		Checksum(&packet);
 		write(_fd, (const void *)&packet, packet.length);
 
@@ -199,3 +214,55 @@ extern "C" __EXPORT int jdmission_main(int argc, char *argv[])
 {
 	return JDMission::main(argc, argv);
 }
+
+
+static char _printBuf[64][80];
+static int rx_cnt, tx_cnt;
+extern "C" __EXPORT void putPrintBuf(char *buf)
+{
+	if(_printBuf[rx_cnt][0] == 0){
+		int len = strlen(buf);
+		len = len<50? len : 50;
+		memcpy(_printBuf[rx_cnt], buf, len);
+		_printBuf[rx_cnt][len] = 0;
+		rx_cnt = (rx_cnt+1)&0x3F;
+	}
+}
+
+
+extern "C" __EXPORT int getPrintBuf(char *buf)
+{
+	if(_printBuf[tx_cnt][0] == 0)
+		return 0;
+
+	int len = strlen(_printBuf[tx_cnt]);
+	memcpy(buf, _printBuf[tx_cnt], len);
+	buf[len] = 0;
+	memset(_printBuf[tx_cnt], 0, 80);
+	tx_cnt = (tx_cnt+1)&0x3F;
+	return len;
+}
+
+extern "C" __EXPORT int _print(int n, FAR const IPTR char *fmt, ...)
+{
+  va_list ap;
+  int     ret;
+  char buf[80];
+  static int cnt;
+
+  if((++cnt%n)!=0)
+	  return 0;
+
+  va_start(ap, fmt);
+#ifdef CONFIG_FILE_STREAM
+  ret = vfprintf(stdout, fmt, ap);
+#else
+  ret = vdprintf(STDOUT_FILENO, fmt, ap);
+#endif
+  vsnprintf(buf, 70, fmt, ap);
+  va_end(ap);
+  putPrintBuf(buf);
+  return ret;
+}
+
+

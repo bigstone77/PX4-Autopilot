@@ -24,6 +24,7 @@
 #include <uORB/topics/sensor_accel.h>
 #include <uORB/topics/distance_sensor.h>
 #include <uORB/topics/optical_flow.h>
+#include <uORB/topics/vehicle_magnetometer.h>
 #include <uORB/topics/log_message.h>
 
 typedef struct __attribute__((__packed__)){
@@ -56,6 +57,7 @@ private:
 	uORB::Subscription _sensor_accel_sub{ORB_ID(sensor_accel)};
 	uORB::Subscription _distance_sensor_sub{ORB_ID(distance_sensor)};
 	uORB::Subscription _optical_flow_sub{ORB_ID(optical_flow)};
+	uORB::Subscription _magnetometer_sub{ORB_ID(vehicle_magnetometer)};
 	uORB::Subscription _log_message_sub{ORB_ID(log_message)};
 	void Checksum(packet_t *pkt);
 	void task_main();
