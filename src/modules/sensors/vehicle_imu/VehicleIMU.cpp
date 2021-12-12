@@ -137,7 +137,7 @@ void VehicleIMU::ParametersUpdate(bool force)
 	}
 }
 
-void VehicleIMU::Run()
+void VehicleIMU::Run()		//4ms
 {
 	const hrt_abstime now_us = hrt_absolute_time();
 
@@ -385,7 +385,7 @@ bool VehicleIMU::UpdateGyro()
 		} else {
 			// collect sample interval average for filters
 			if ((_gyro_timestamp_sample_last != 0) && (gyro.samples > 0)) {
-				const float interval_us = gyro.timestamp_sample - _gyro_timestamp_sample_last;
+				const float interval_us = gyro.timestamp_sample - _gyro_timestamp_sample_last;	//2ms
 
 				if (interval_us > 0.f) {
 					_gyro_interval_mean.update(Vector2f{interval_us, interval_us / gyro.samples});
@@ -495,6 +495,7 @@ bool VehicleIMU::Publish()
 			UpdateAccelVibrationMetrics(acceleration);
 			const Vector3f delta_velocity_corrected{acceleration / accel_dt_inv};
 
+
 			// vehicle_imu_status
 			//  publish before vehicle_imu so that error counts are available synchronously if needed
 			if ((_accel_sum_count > 0) && (_gyro_sum_count > 0)
@@ -534,8 +535,7 @@ bool VehicleIMU::Publish()
 			imu.delta_velocity_clipping = _delta_velocity_clipping;
 			imu.calibration_count = _accel_calibration.calibration_count() + _gyro_calibration.calibration_count();
 			imu.timestamp = hrt_absolute_time();
-			_vehicle_imu_pub.publish(imu);
-
+			_vehicle_imu_pub.publish(imu);		//6ms
 			// reset clip counts
 			_delta_velocity_clipping = 0;
 

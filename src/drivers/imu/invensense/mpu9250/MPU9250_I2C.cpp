@@ -552,7 +552,7 @@ void MPU9250_I2C::ProcessGyro(const hrt_abstime &timestamp_sample, const FIFO::D
 {
 	sensor_gyro_fifo_s gyro{};
 	gyro.timestamp_sample = timestamp_sample;
-	gyro.samples = samples;
+	gyro.samples = samples;	//2
 	gyro.dt = FIFO_SAMPLE_DT;
 
 	for (int i = 0; i < samples; i++) {
@@ -570,7 +570,7 @@ void MPU9250_I2C::ProcessGyro(const hrt_abstime &timestamp_sample, const FIFO::D
 	_px4_gyro.set_error_count(perf_event_count(_bad_register_perf) + perf_event_count(_bad_transfer_perf) +
 				  perf_event_count(_fifo_empty_perf) + perf_event_count(_fifo_overflow_perf));
 
-	_px4_gyro.updateFIFO(gyro);
+	_px4_gyro.updateFIFO(gyro);	//2ms
 }
 
 void MPU9250_I2C::UpdateTemperature()

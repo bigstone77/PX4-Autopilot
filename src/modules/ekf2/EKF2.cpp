@@ -404,7 +404,7 @@ void EKF2::Run()
 		UpdateImuStatus();
 
 		// push imu data into estimator
-		_ekf.setIMUData(imu_sample_new);
+		_ekf.setIMUData(imu_sample_new);	//6ms
 		PublishAttitude(now); // publish attitude immediately (uses quaternion from output predictor)
 
 		// integrate time to monitor time slippage
