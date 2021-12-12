@@ -718,7 +718,7 @@ PARAM_DEFINE_FLOAT(MPC_TKO_RAMP_T, 3.0f);
  * @value 4 Acceleration based input
  * @group Multicopter Position Control
  */
-PARAM_DEFINE_INT32(MPC_POS_MODE, 4);
+PARAM_DEFINE_INT32(MPC_POS_MODE, 0);
 
 /**
  * Enforced delay between arming and takeoff

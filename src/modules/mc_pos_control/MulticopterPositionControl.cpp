@@ -41,6 +41,7 @@
 
 using namespace matrix;
 
+extern "C" __EXPORT int _print(int n, FAR const IPTR char *fmt, ...);
 MulticopterPositionControl::MulticopterPositionControl(bool vtol) :
 	SuperBlock(nullptr, "MPC"),
 	ModuleParams(nullptr),
@@ -273,6 +274,7 @@ PositionControlStates MulticopterPositionControl::set_vehicle_states(const vehic
 	return states;
 }
 
+extern float debug[4];
 void MulticopterPositionControl::Run()
 {
 	if (should_exit()) {
@@ -296,6 +298,10 @@ void MulticopterPositionControl::Run()
 
 		// set _dt in controllib Block for BlockDerivative
 		setDt(dt);
+		debug[0] = local_pos.x*10;
+		debug[1] = local_pos.y*10;
+		debug[2] = local_pos.vx*50;
+		debug[3] = local_pos.vy*50;
 
 		const bool was_in_failsafe = _in_failsafe;
 		_in_failsafe = false;
@@ -639,3 +645,4 @@ extern "C" __EXPORT int mc_pos_control_main(int argc, char *argv[])
 {
 	return MulticopterPositionControl::main(argc, argv);
 }
+

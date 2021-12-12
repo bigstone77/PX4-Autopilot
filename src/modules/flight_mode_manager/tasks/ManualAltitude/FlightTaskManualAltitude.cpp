@@ -40,6 +40,7 @@
 #include <mathlib/mathlib.h>
 #include <geo/geo.h>
 
+extern "C" __EXPORT int _print(int n, FAR const IPTR char *fmt, ...);
 using namespace matrix;
 
 FlightTaskManualAltitude::FlightTaskManualAltitude() :
@@ -95,12 +96,14 @@ void FlightTaskManualAltitude::_updateConstraintsFromEstimator()
 	}
 }
 
+float g_zVel;
 void FlightTaskManualAltitude::_scaleSticks()
 {
 	// Use stick input with deadzone, exponential curve and first order lpf for yawspeed
 	const float yawspeed_target = _sticks.getPositionExpo()(3) * math::radians(_param_mpc_man_y_max.get());
 	_yawspeed_setpoint = _applyYawspeedFilter(yawspeed_target);
 
+	g_zVel = _sticks.getPosition()(2);
 	// Use sticks input with deadzone and exponential curve for vertical velocity
 	const float vel_max_z = (_sticks.getPosition()(2) > 0.0f) ? _constraints.speed_down : _constraints.speed_up;
 	_velocity_setpoint(2) = vel_max_z * _sticks.getPositionExpo()(2);
@@ -127,6 +130,7 @@ void FlightTaskManualAltitude::_updateAltitudeLock()
 
 	// Manage transition between use of distance to ground and distance to local origin
 	// when terrain hold behaviour has been selected.
+
 	if (_param_mpc_alt_mode.get() == 2) {
 		// Use horizontal speed as a transition criteria
 		float spd_xy = Vector2f(_velocity).length();

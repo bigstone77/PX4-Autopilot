@@ -62,6 +62,7 @@
 #include "jdmission.h"
 
 
+float debug[4];
 extern float motor_output[4];
 extern "C" int getPrintBuf(char *buf);
 static char printBuf[100];
@@ -124,9 +125,9 @@ void JDMission::Run()		//2ms
 	if(_sensor_accel_sub.updated()){
 		sensor_accel_s accel;
 		if (_sensor_accel_sub.update(&accel)) {
-			packet.data8[4] = (int8_t)(accel.x*5);
-			packet.data8[5] = (int8_t)(accel.y*5);
-			packet.data8[6] = (int8_t)(accel.z*5);
+			packet.data8[4] = (int8_t)(accel.x*10);
+			packet.data8[5] = (int8_t)(accel.y*10);
+			packet.data8[6] = (int8_t)(accel.z*10);
 			packet.data8[7] = 0;
 		}
 	}
@@ -155,8 +156,10 @@ void JDMission::Run()		//2ms
 	}
 
 	if((now_us-last_time)>20000){
-		for(int n=0;n <4 ;n++)
+		for(int n=0;n <4 ;n++){
 			packet.data8[8+n] = (int8_t)(motor_output[n]*100);
+			packet.data8[12+n] = (int8_t)(debug[n]*1);
+		}
 		Checksum(&packet);
 		write(_fd, (const void *)&packet, packet.length);
 

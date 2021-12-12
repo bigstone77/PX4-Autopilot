@@ -87,6 +87,7 @@ bool PreFlightChecker::preFlightCheckHorizVelFailed(const estimator_innovations_
 		Vector2f flow_innov_lpf;
 		flow_innov_lpf(0) = _filter_flow_x_innov.update(flow_innov(0), alpha, _flow_innov_spike_lim);
 		flow_innov_lpf(1) = _filter_flow_x_innov.update(flow_innov(1), alpha, _flow_innov_spike_lim);
+		if(0)
 		has_failed |= checkInnov2DFailed(flow_innov_lpf, flow_innov, _flow_innov_test_lim, 5.f * _flow_innov_spike_lim);
 	}
 
